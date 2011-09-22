@@ -1,0 +1,260 @@
+Functions
+=========
+
+Scopes
+------
+
+Creating Names
+~~~~~~~~~~~~~~
+
+To create new variables you don't need declarations, only assignments. But how
+does Python determine the scope of the variable?
+
+There is a single scope (also known as the *global scope*) for each file
+(module). Each function **call** (not definition) creates a new *local scope*::
+
+  x = 1
+  def f():
+      x = 2
+      print x
+
+  f()
+  print x
+
+Assignment isn't the only way to add names to a scope. You can also use
+``import``, ``def`` or function argument lists. To get the list of names
+declared in the current scope, you can use the :func:`dir` function::
+
+  import math
+  x = 1
+  def f(arg):
+      x = 2
+      print x
+      print 'local scope:', dir()
+
+  f()
+  print x
+  print 'global scope:', dir()
+
+Notice how the name ``f`` is created in the global scope and ``arg`` is created
+in the local scope. ``x`` is present in both scopes, but refers to different
+values.
+
+But if assignments from a function create new names in the local scope, how can
+we change the global variables from a function? The global name must be declared
+as ``global``::
+
+  def f():
+      global x
+      x = 2
+      print x
+
+  x = 1
+  f()
+  print x
+
+
+Name Resolution
+~~~~~~~~~~~~~~~
+
+In the previous example you can notice that ``x`` is created after the body of
+``f`` has been defined. This proves that name resolution happens when ``f`` is
+called.
+
+For name lookup the ``global`` declaration is not needed, as long as there is no
+local variable with the same name::
+
+  x = 1
+  def f():
+      print x
+
+  f()
+
+But if a function contains a statement defining a name in the local scope, that
+name is considered local for all the lookups, even for those that appear before
+the assignment. This is true even for unreachable statements which define
+names::
+
+  x = 1
+  def f():
+      print x
+      if False:
+          x = 2
+
+  f()
+
+More formally, names are searched in:
+
+- the local scope, see :func:`locals`
+- the scope of enclosing functions
+- the global scope, see :func:`globals`
+- the built-in scope, run ``dir(__builtins__)``
+
+The search stops at the first place where the name is found.
+
+Example code to illustrate this::
+
+  def outer():
+      def f():
+          a = 2
+          print 'local scope', dir()
+      f()
+      print 'enclosing defs', dir()
+
+  x = 1
+  outer()
+  print 'global scope', dir()
+  print 'builtins', dir(__builtins__)
+
+
+Nested Functions
+~~~~~~~~~~~~~~~~
+
+::
+
+  def f1(x):
+      def f2():
+          print x
+      return f2
+
+  action = f1(1)
+  action()
+
+  f1(2)()
+  f1(3)()
+
+Notice that ``f2`` can access the ``x`` even if after ``f1`` (which defines `x`)
+has returned. This type of function is called `closure
+<http://en.wikipedia.org/wiki/Closure_(computer_science)>`_. Simply put, the
+function `f2` holds a reference to the local scope in which it was defined.
+
+Unfortunately there is no way to change the value of ``x`` from ``f2`` in
+Python 2. Python 3 fixes this by adding the `nonlocal
+<http://docs.python.org/py3k/reference/simple_stmts.html#the-nonlocal-statement>`
+statement. However this can be worked around easily::
+
+  def incrementer(step=1):
+      v = dict(x=0)
+      def inner():
+          v['x'] += step
+          return v['x']
+      return inner
+
+  a = incrementer()
+  print a()
+  print a()
+  print a()
+
+  b = incrementer(5)
+  print b()
+  print b()
+  print b()
+
+Notice how each call to ``incrementer`` creates a new scope (``b`` starts
+counting from 0 again).
+
+
+Exercise
+~~~~~~~~
+
+Let's say you want to add some logging to your application. You have some
+functions already written, and want to log the arguments for each function
+call::
+
+  def a(color, size=5):
+      pass
+
+  def b(l):
+      pass
+
+  def c(arg1, arg2, arg3):
+      pass
+
+  a('black')
+  b(["a", 1])
+  c('test', 4, arg3=51)
+
+Of course, you could go through each function and add a logging statement::
+
+  import logging
+  logging.basicConfig(level=logging.DEBUG)
+
+  def a(color, size=5):
+      logging.debug("calling a(%s, %d)" % (repr(color), size))
+
+  def b(l):
+      logging.debug('calling b(%s)' % repr(l))
+
+  def c(arg1, arg2, arg3):
+      logging.debug('calling c(%s, %s, %s)'
+                    % (repr(arg1), repr(arg2), repr(arg3)))
+
+  a('black')
+  b(["a", 1])
+  c('test', 4, arg3=51)
+
+However, this gets boring fast. There's a better way to do it: write a function
+
+.. function:: log_call(f)
+
+which returns a function that does the required logging and then calls
+``f``. You can then replace the original functions (ex: ``a = log_call(a)``)
+before calling them to achieve the desired result.
+
+Hints:
+
+- you might need to revisit the last example from :ref:`mappings`
+- to get the original name of ``f`` you can use ``f.__name__``
+
+
+Function Decorators
+~~~~~~~~~~~~~~~~~~~
+
+Python provides some syntactic sugar to make wrapping functions (which was
+necessary in the previous exercise) easier. To achieve this::
+
+  def useless_decorator(f):
+      return f
+
+  def f():
+      print "f"
+
+  f = useless_decorator(f)
+  f()
+
+you can use a decorator::
+
+  def useless_decorator(f):
+      return f
+
+  @useless_decorator
+  def f():
+      print "f"
+
+  f()
+
+In the simplest form, a decorator is a function which takes as a parameter a
+function to be decorated and returns another function.
+
+The ``@`` syntax calls the decorator with the function from the following line
+as a parameter and binds the name of this function to the return value of the
+call.
+
+To achieve something useful, the decorator usually needs to return a different
+function::
+
+  def logging_decorator(f):
+      def wrapper(*args, **kwargs):
+          print "before"
+          f()
+          print "after"
+      return wrapper
+
+  @logging_decorator
+  def hi():
+      print "hi"
+
+  hi()
+  print hi.__name__
+
+Notice that ``hi.__name__`` is now ``wrapper``.

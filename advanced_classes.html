@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Advanced Class Topics</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '.',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="" href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li><a href="index.html"></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="advanced-class-topics">
+<h1>Advanced Class Topics<a class="headerlink" href="#advanced-class-topics" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="new-style-classes">
+<h2>New-style Classes<a class="headerlink" href="#new-style-classes" title="Permalink to this headline">¶</a></h2>
+<p>If a class inherits from <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt> or a built-in type, it is a new-style
+class. The old-style classes only exist for backwards compatibility and were
+removed in Python 3.0.</p>
+<p>The most obvious difference is that new-style classes and built-in classes are
+no longer treated differently:</p>
+<div class="highlight-python"><pre>- subclass built-in types
+- type(instance)
+- type(class)
+- C3 mro
+- __getattr__ and __getattribute__ no longer run for __xxx__ operator overloading functions
+-</pre>
+</div>
+</div>
+<div class="section" id="super">
+<h2>super<a class="headerlink" href="#super" title="Permalink to this headline">¶</a></h2>
+<p>Class methods (<a class="reference external" href="http://docs.python.org/library/functions.html#classmethod" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">classmethod()</span></tt></a>) are similar to static methods, but they
+receive the class as the first parameter automatically. They are useful for
+creating named constructors which need to be customized in subclasses:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Variable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_unique</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="s">&quot;var&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">count</span><span class="p">))</span>
+        <span class="n">cls</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+<span class="k">class</span> <span class="nc">PerlVariable</span><span class="p">(</span><span class="n">Variable</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_unique</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PerlVariable</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;$&#39;</span> <span class="o">+</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+<span class="k">assert</span> <span class="n">Variable</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;var0&#39;</span>
+<span class="k">assert</span> <span class="n">Variable</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;var1&#39;</span>
+<span class="k">assert</span> <span class="n">PerlVariable</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;$var2&#39;</span>
+<span class="k">assert</span> <span class="n">PerlVariable</span><span class="o">.</span><span class="n">make_unique</span><span class="p">()</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="n">PerlVariable</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Advanced Class Topics</a><ul>
+<li><a class="reference internal" href="#new-style-classes">New-style Classes</a></li>
+<li><a class="reference internal" href="#super">super</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/advanced_classes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+  </body>
+</html>

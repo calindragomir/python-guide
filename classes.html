@@ -1,17 +1,19 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Classes</title>
+    
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '.',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -206,7 +208,7 @@ exhausted.</p>
 <p>The relations between instances and classes can be represented as a <a class="reference external" href="http://en.wikipedia.org/wiki/Directed_acyclic_graph">directed
 acyclic graph</a>:</p>
 <p class="graphviz">
-<img src="_images/graphviz-7b645be03a048313df2e492fb74222610e4bbbf4.png" alt="digraph class1 {
+<img src="_images/graphviz-21fd3f36a7a8e6e27d8e3c73ccf128572d607070.png" alt="digraph class1 {
 graph [rankdir=BT];
 edge [fontsize=7];
 D [shape=box];
@@ -228,24 +230,24 @@ to top and from left to right (the preordering from <a class="reference external
 <col width="67%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Node</th>
+<tr class="row-odd"><th class="head">Node</th>
 <th class="head">Attributes</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>d_inst</td>
+<tr class="row-even"><td>d_inst</td>
 <td>t = 6</td>
 </tr>
-<tr><td>D</td>
+<tr class="row-odd"><td>D</td>
 <td>x = 5</td>
 </tr>
-<tr><td>B1</td>
+<tr class="row-even"><td>B1</td>
 <td>x = 1, y = 2</td>
 </tr>
-<tr><td>B0</td>
+<tr class="row-odd"><td>B0</td>
 <td>z = 0</td>
 </tr>
-<tr><td>B2</td>
+<tr class="row-even"><td>B2</td>
 <td>y = 3, z = 4</td>
 </tr>
 </tbody>
@@ -616,7 +618,7 @@ Python documentation: <a class="reference external" href="http://docs.python.org
 <div class="section" id="string-conversion-str-and-repr">
 <h3>String Conversion: __str__ and __repr__<a class="headerlink" href="#string-conversion-str-and-repr" title="Permalink to this headline">¶</a></h3>
 <p>These methods are called in response to the built-in functions <a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">str()</span></tt></a> and
-<a class="reference external" href="http://docs.python.org/library/functions.html#repr" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt></a>. Print automatically calls str for any argument which is not a
+<tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt>. Print automatically calls str for any argument which is not a
 string object:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">):</span>
@@ -646,13 +648,13 @@ string object:</p>
 </div>
 <p>When evaluating <tt class="docutils literal"><span class="pre">str(object)</span></tt> Python will fall back to <strong>__repr__</strong> if
 <strong>__str__</strong> is not defined (but not the other way around).</p>
-<p>The Python shell prints will print the <a class="reference external" href="http://docs.python.org/library/functions.html#repr" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt></a> form for the results of
-typed expressions.</p>
+<p>The Python shell will print the <tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt> form for the results of typed
+expressions.</p>
 <div class="section" id="id2">
 <h4>Exercise<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>Change the <a class="reference internal" href="#Person" title="Person"><tt class="xref py py-class docutils literal"><span class="pre">Person</span></tt></a> and <a class="reference internal" href="#Employee" title="Employee"><tt class="xref py py-class docutils literal"><span class="pre">Employee</span></tt></a> classes defined earlier to
 respond to <a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">str()</span></tt></a> instead of <a class="reference internal" href="#Person.get_info" title="Person.get_info"><tt class="xref py py-meth docutils literal"><span class="pre">Person.get_info()</span></tt></a>. Also make them
-respond to <a class="reference external" href="http://docs.python.org/library/functions.html#repr" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt></a>.</p>
+respond to <tt class="xref py py-func docutils literal"><span class="pre">repr()</span></tt>.</p>
 <p><strong>Unit test</strong>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test_employee2</span><span class="p">():</span>
     <span class="n">count</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">count</span>
@@ -716,27 +718,27 @@ normally called in response to <a class="reference external" href="http://docs.p
 <col width="52%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Expression</th>
+<tr class="row-odd"><th class="head">Expression</th>
 <th class="head">Method call</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>x == y</td>
+<tr class="row-even"><td>x == y</td>
 <td>x.__eq__(y)</td>
 </tr>
-<tr><td>x != y</td>
+<tr class="row-odd"><td>x != y</td>
 <td>x.__ne__(y)</td>
 </tr>
-<tr><td>x &lt; y</td>
+<tr class="row-even"><td>x &lt; y</td>
 <td>x.__lt__(y)</td>
 </tr>
-<tr><td>x &gt; y</td>
+<tr class="row-odd"><td>x &gt; y</td>
 <td>x.__gt__(y)</td>
 </tr>
-<tr><td>x &lt;= y</td>
+<tr class="row-even"><td>x &lt;= y</td>
 <td>x.__le__(y)</td>
 </tr>
-<tr><td>x &gt;= y</td>
+<tr class="row-odd"><td>x &gt;= y</td>
 <td>x.__ge__(y)</td>
 </tr>
 </tbody>
@@ -862,7 +864,7 @@ above.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />

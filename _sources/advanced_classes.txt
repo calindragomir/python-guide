@@ -1,0 +1,52 @@
+Advanced Class Topics
+=====================
+
+New-style Classes
+-----------------
+
+If a class inherits from :class:`object` or a built-in type, it is a new-style
+class. The old-style classes only exist for backwards compatibility and were
+removed in Python 3.0.
+
+The most obvious difference is that new-style classes and built-in classes are
+no longer treated differently::
+
+  
+
+- subclass built-in types
+- type(instance)
+- type(class)
+- C3 mro
+- __getattr__ and __getattribute__ no longer run for __xxx__ operator overloading functions
+-
+
+super
+-----
+
+Class methods (:func:`classmethod`) are similar to static methods, but they
+receive the class as the first parameter automatically. They are useful for
+creating named constructors which need to be customized in subclasses::
+
+  class Variable(object):
+      count = 0
+
+      def __init__(self, name):
+          self.name = name
+
+      @classmethod
+      def make_unique(cls):
+          instance = cls("var" + str(cls.count))
+          cls.count += 1
+          return instance
+
+  class PerlVariable(Variable):
+      @classmethod
+      def make_unique(cls):
+          instance = super(PerlVariable, cls).make_unique()
+          instance.name = '$' + instance.name
+          return instance
+
+  assert Variable.make_unique().name == 'var0'
+  assert Variable.make_unique().name == 'var1'
+  assert PerlVariable.make_unique().name == '$var2'
+  assert PerlVariable.make_unique().__class__ == PerlVariable
